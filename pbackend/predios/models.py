@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 class Ddr(models.Model):
     estado_id = models.IntegerField(null=True, blank=True)
@@ -112,3 +113,10 @@ class Cultivo(models.Model):
         verbose_name = 'cultivos'
         db_table = 'cultivos'
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='profile')
+    tipo = models.CharField(max_length=10)
+    ddr = models.ForeignKey(Ddr)
+    cader = models.ForeignKey(Cader)
+    nombre = models.CharField(db_column='NOMBRE', max_length=100, null=True, blank=True)
+    jefe_cader = models.BooleanField(db_column="JEFE CADER", default=False)

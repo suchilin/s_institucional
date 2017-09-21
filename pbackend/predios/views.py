@@ -24,6 +24,10 @@ class ProductorViewSet(viewsets.ModelViewSet):
     serializer_class = ProductorSerializer
     pagination_class = Pagination
 
+    def get_queryset(self):
+        print('username: ',self.request.user)
+        return Productor.objects.all()
+
 class PropietarioViewSet(viewsets.ModelViewSet):
     queryset = Propietario.objects.all()
     serializer_class = PropietarioSerializer
