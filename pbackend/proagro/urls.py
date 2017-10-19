@@ -10,5 +10,6 @@ router.register(r'cultivos', views.CultivoViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^get_user_profile/$', views.getUserProfile.as_view()),
     url(r'^rest-auth/', include('rest_auth.urls')),
 ]

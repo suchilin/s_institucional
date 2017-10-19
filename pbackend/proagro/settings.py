@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'predios.middleware.ProagroMiddleware',
 ]
 
 ROOT_URLCONF = 'proagro.urls'
@@ -83,7 +84,7 @@ WSGI_APPLICATION = 'proagro.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'proagro',
+        'NAME': 'sistema_institucional',
         'USER': 'proagro',
         'PASSWORD': '5uchilin',
         'HOST': 'localhost',
@@ -133,7 +134,7 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,

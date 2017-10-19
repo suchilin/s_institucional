@@ -116,7 +116,7 @@ class Cultivo(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     tipo = models.CharField(max_length=10)
-    ddr = models.ForeignKey(Ddr)
-    cader = models.ForeignKey(Cader)
-    nombre = models.CharField(db_column='NOMBRE', max_length=100, null=True, blank=True)
+    ddr = models.ForeignKey(Ddr, null=True)
+    cader = models.ForeignKey(Cader, null=True)
+    nombre = models.CharField(max_length=100)
     jefe_cader = models.BooleanField(db_column="JEFE CADER", default=False)

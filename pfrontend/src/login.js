@@ -16,7 +16,7 @@ class Login extends Component{
         var lgn = auth.login(this.state.username,this.state.password)
         console.log(lgn)
         if(lgn===200){
-            this.props.history.push('/admin/posts/')
+            this.props.history.push('/')
         }else if(lgn===400){
             this.setState({
                 errors:"Su usuario o contraseña no son correctos, porfavor verifiquelos"

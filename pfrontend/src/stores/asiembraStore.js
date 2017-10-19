@@ -12,6 +12,9 @@ class AsiembraStore {
     @observable superficieError
     @observable apdf = ''
     @observable apdfCultivos = []
+    @observable productorFilterValue = null
+    @observable productorFilterType = 'nombre'
+    @observable uprofile = {}
 
     //constructor() {
         //this.dataSource.map((cult)=>{

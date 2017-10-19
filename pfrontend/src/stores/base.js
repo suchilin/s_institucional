@@ -18,7 +18,7 @@ class BaseStore{
          if(page){
              a_url_ = this.url + '?page='+page;
          } 
-        return axios.get(a_url_)
+        return axios.get(a_url_, {headers:{"Authorization": "Token "+localStorage.token}})
             .then(function(res){
             self.objects = []
             res.data.results.map(function(obj_){
@@ -53,7 +53,7 @@ class BaseStore{
              turl += '&'+key+'='+params[key]
          })
          console.log(this.url)
-         return axios.get(turl)
+         return axios.get(turl, {headers:{"Authorization": "Token "+localStorage.token}})
             .then(function(res){
             self.objects = []
             res.data.results.map(function(obj_){
@@ -93,6 +93,7 @@ class BaseStore{
                 data[key] = this[key]
             }
         }
+        data[headers] = {"Authorization": "Token "+localStorage.token}
         axios.post(this.url,data)
             .then((res)=>{
                 console.log(res)
@@ -140,7 +141,7 @@ class BaseStore{
     get(key){
         var self = this
         console.log('url: '+this.url)
-        return axios.get(this.url+key)
+        return axios.get(this.url+key+'/', {headers:{"Authorization": "Token "+localStorage.token}})
         .then(function(response){
             var data=response.data;
             for(var key in self){

@@ -11,6 +11,9 @@ import { TextValidator, AutoCompleteValidator } from 'react-material-ui-form-val
 import {ValidatorForm} from 'react-form-validator-core';
 import pdfMake from 'pdfmake/build/pdfmake';
 import vfsFonts from 'pdfmake/build/vfs_fonts'
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 
 Array.prototype.groupBy = function(prop) {
   return this.reduce(function(groups, item) {
@@ -170,25 +173,33 @@ class ReadProductor extends Component{
              {
                 columns:[
                     {
-                        image:'data:image/png;base64,'+sagarpa_logo,
-                        width: 200
-                    },
-                    {
-                        width: '20%',
-                        text: ''
+                        width: '60%',
+                        stack:[
+                            {
+                                width: 200,
+                                image:'data:image/png;base64,'+sagarpa_logo
+                            },
+                            {text:'Delegacion Durango\n', style:'header', alignment: 'center'},
+                        ]
                     },
                     {
                         width:'50%',
-                        text:'Aviso de siembra', style:'header' 
-                    }
+                        {qr:"hello world"}
+                    },
                  ]
              },
-               { text:[
+               { 
+                columns:[
+                   {
+                       width: '70%',
+                       text:[
                             {text: '\n\nProductor:  ', bold:true},
                             {text:this.props.store.nombre},
                             {text:'\nCURP: ', bold:true},
                             {text:this.props.store.curp}
                         ]
+                    },
+                ]
                },
                { 
                    text: '\nPOR ACUERDO No. 01 DE LA SESIÓN DE FECHA 06 DE MARZO DEL 2015 DEL CONSEJO ESTATAL DE DESARROLLO RURAL SUSTENTABLE DEL ESTADO DE DURANGO.\n\n',
@@ -211,6 +222,7 @@ class ReadProductor extends Component{
                    alignment: 'justify'
 
              },
+                    {qr:"hello world"}
 
            ],
 
@@ -229,52 +241,53 @@ class ReadProductor extends Component{
             pdfMake.createPdf(docDefinition).getDataUrl(function(result){
                 self.props.astore.apdf = result
             })
-            this.props.astore.asd_open = true;
+                this.props.astore.asd_open = true;
         },500)
     }
 
     render(){
         return(
             <div>
-            <h1>Productor {this.props.store.nombre}</h1>
+            <h2>Productor {this.props.store.nombre}</h2>
                 <table className='tpredio'>
-                    <tr>
-                        <td><b>CURP</b></td>
-                        <td>{this.props.store.curp}</td>
-                        <td><b>Id SURI</b></td>
-                        <td>{this.props.store.id_suri}</td>
-                        <td><b>RFC</b></td>
-                        <td>{this.props.store.rfc}</td>
-                    </tr>
-                    <tr>
-                        <td><b>F. de nac.</b></td>
-                        <td>{this.props.store.fecha_nacimiento}</td>
-                        <td><b>Es persona fisica</b></td>
-                        <td>
-                            {
+                        <tr>
+                            <td><b>CURP</b></td>
+                            <td>{this.props.store.curp}</td>
+                            <td><b>Id SURI</b></td>
+                            <td>{this.props.store.id_suri}</td>
+                            <td><b>RFC</b></td>
+                            <td>{this.props.store.rfc}</td>
+                        </tr>
+                        <tr>
+                            <td><b>F. de nac.</b></td>
+                            <td>{this.props.store.fecha_nacimiento}</td>
+                            <td><b>Es persona fisica</b></td>
+                            <td>
+                                {
                                 this.props.store.persona_fisica
-                            ?
-                            <i className='material-icons' >check</i>
-                            :
-                            <i className='material-icons' >close</i>
-                            }
-                        </td>
-                        <td><b>Padron unico</b></td>
-                        <td>
-                            {
+                                ?
+                                <i className="mdi mdi-checkbox-marked"></i>
+                                :
+                                <i className="mdi mdi-close-box"></i>
+                                }
+                            </td>
+                            <td><b>Padron unico</b></td>
+                            <td>
+                                {
                                 this.props.store.registro_padron
                                 ?
-                                <i className='material-icons' >check</i>
+                                <i className='mdi mdi-checkbox-marked' />
                                 :
-                                <i className='material-icons' >close</i>
-                            }
-                        </td>
-                    </tr>
+                                <i className='mdi mdi-close-box' />
+                                }
+                            </td>
+                        </tr>
                 </table>
                 <h2>Acciones</h2>
                 Imprimir aviso de siembra
-                Ciclo 
+                ciclo 
                 <select onChange={this.handleASiembra.bind(this)}>
+                    <option>Seleccione un ciclo</option>
                     <option value='pv17'>Pv17</option>
                     <option value='pv16'>Pv16</option>
                     <option value='pv15'>Pv15</option>
@@ -283,11 +296,19 @@ class ReadProductor extends Component{
                 {this.props.pstore.objects.map((predio, id)=>{
                     return(
                     <div key={id}>
-                        <div className="predioTitle">
-                            Folio: {predio.folio_predio}
-                        </div>
-                        <div className="predioBody">
+                            <Card>
+    <CardHeader
+      title={"Folio: " +predio.folio_predio}
+      subtitle={"Superficie total: " + predio.superficie_total}
+      actAsExpander={true}
+      showExpandableButton={true}
+    />
+    <CardActions>
+      <FlatButton label="Aviso de siembra" onClick={this.openDialog.bind(this, predio.folio_predio, predio.id)} />
+    </CardActions>
+    <CardText expandable={true}>
                             <table className='tpredio'>
+                                <tbody>
                                     <tr>
                                         <td><b>DDR</b></td>
                                         <td>{predio.ddr}</td> 
@@ -306,17 +327,13 @@ class ReadProductor extends Component{
                                         <td><b>Superficie elegible</b></td>
                                         <td>{predio.superficie_elegible}</td>
                                     </tr>
-                                </table>
-                                <br />
+                                </tbody>
+                            </table>
+    </CardText>
+  </Card>
+<br />
+<br />
 
-
-
-                                <Button 
-                                    raised 
-                                    primary
-                                    onClick={this.openDialog.bind(this, predio.folio_predio, predio.id)}
-                                >Aviso de siembra</Button>
-                            </div>
                         </div>
                         )
                     })

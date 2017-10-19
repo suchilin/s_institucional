@@ -3,7 +3,6 @@ import $ from 'jquery'
 module.exports = {
     login: function(username, pass) {
         if (this.loggedIn()) {
-            console.log("one")
             return true;
         }
         return this.getToken(username, pass)
@@ -80,5 +79,36 @@ module.exports = {
             }
         })
         return user
+    },
+
+    getProfile(){
+        var profile = {}
+
+        $.ajax({
+            type: 'post',
+            contentType: "application/json",
+            dataType: "json",
+            crossDomain: true,
+            async:false,
+            headers:{
+                "Authorization": "Token "+localStorage.token
+            },
+            url: 'http://localhost:8000/get_user_profile/'
+        })
+        .done(function(res, textStatus, xhr){
+            profile = {
+                "tipo":res.tipo,
+                "ddr": res.tip,
+                "cader": res.cader,
+                "jefe_cader": res.jefe_cader,
+                "nombre": res.nombre
+            }
+        })
+        .fail(function(xhr){
+            profile={
+                "status":xhr.status
+            }
+        })
+        return profile
     }
 }

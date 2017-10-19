@@ -1,9 +1,12 @@
 from django.shortcuts import get_object_or_404
 from predios.serializers import ProductorSerializer, PredioSerializer, PropietarioSerializer, CultivoSerializer
-from predios.models import Productor, Predio, Propietario, Cultivo
+from predios.models import Productor, Predio, Propietario, Cultivo, UserProfile
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.forms.models import model_to_dict
+
 
 class Pagination(PageNumberPagination):
     page_size = 100
@@ -23,10 +26,25 @@ class ProductorViewSet(viewsets.ModelViewSet):
     queryset = Productor.objects.all()
     serializer_class = ProductorSerializer
     pagination_class = Pagination
+    # filter_class = ProductorFilter
 
     def get_queryset(self):
-        print('username: ',self.request.user)
-        return Productor.objects.all()
+        nombre = self.request.GET.get('nombre')
+        curp = self.request.GET.get('curp')
+        user = self.request.user
+        tipo = user.profile.tipo
+        qs = Predio.objects.all().exclude(productor__curp='')
+        if tipo=='ddr':
+            qs = qs.filter(ddr = user.profile.ddr)
+        if tipo == 'cader':
+            qs = qs.filter(cader = user.profile.cader)
+        p_qs = qs.values_list('productor__curp', flat=True)
+        f_qs = self.queryset.filter(curp__in=p_qs)
+        if nombre:
+            f_qs = f_qs.filter(nombre__icontains=nombre)
+        if curp:
+            f_qs = f_qs.filter(curp__icontains=curp)
+        return f_qs 
 
 class PropietarioViewSet(viewsets.ModelViewSet):
     queryset = Propietario.objects.all()
@@ -45,11 +63,15 @@ class CultivoViewSet(viewsets.ModelViewSet):
     pagination_class = Pagination
     filter_fields=('predio','ciclo',)
 
-    # def get_queryset(self):
-        # qs = Cultivo.objects.all()
-        # if self.request.GET.get('ciclo'):
-            # print('ciclo en url',self.request.GET.get('ciclo'))
-            # qs = qs.filter(ciclo=self.request.GET.get('ciclo'))
-        # if type(self.request.GET.getlist('predio'))== list:
-            # return qs.filter(predio__in=self.request.GET.getlist('predio'))
-        # return qs
+class getUserProfile(APIView):
+    def post(self, request, format=None):
+        user = request.user
+        profile = model_to_dict(user.profile)
+        jc = profile['jefe_cader']
+        jefe_cader = ''
+        if(jc):
+            jefe_cader = profile['nombre']
+        else:
+            pfle = UserProfile.objects.get(ddr=profile['ddr'], cader=profile['cader'], jefe_cader=True )
+            profile['jefe_cader']=pfle.nombre
+        return Response(profile)
